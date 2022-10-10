@@ -103,6 +103,8 @@ exec(char *path, char **argv)
   freevm(oldpgdir);
   return 0;
 
+  printfpgdir(pgdir);
+  
  bad:
   if(pgdir)
     freevm(pgdir);

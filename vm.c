@@ -385,6 +385,31 @@ copyout(pde_t *pgdir, uint va, void *p, uint len)
   return 0;
 }
 
+void
+printfpgdir(pde_t *pgdir)
+{
+  int i;
+  pte_t *pte;
+  uint pa;
+
+  for(i = 0; i < NPDENTRIES; i++){
+
+    if(pgdir[i] & PTE_P){
+
+      cprintf("pgdir[%d] : %x\n", i, pgdir[i]);
+      pte = (pte_t*)P2V(PTE_ADDR(pgdir[i]));
+
+      for(int j = 0; j < NPTENTRIES; j++){
+
+        if(pte[j] & PTE_P){
+          pa = PTE_ADDR(pte[j]);
+          cprintf("pte[%d] : %x ", j, pa);
+        }
+      }
+    }
+  }    
+}
+
 //PAGEBREAK!
 // Blank page.
 //PAGEBREAK!
