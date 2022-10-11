@@ -163,20 +163,28 @@ filelseek(struct file *f, int offset, int whence)
   if (f->type == FD_INODE) {
 
     ilock(f->ip);
+
     switch(whence)
     {
-      case SEEK_SET: 
+      case SEEK_SET:
+        if(offset < 0 || offset > f->ip->size)
+          return -1;
         f->off = offset;
         break;
       case SEEK_CUR:
+        if (f->off + offset < 0 || f->off + offset > f->ip->size)
+          return -1;
         f->off += offset;
         break;
       case SEEK_END:
+        if (offset > 0)
+          return -1;
         f->off = f->ip->size + offset;
         break;
       default:
         return -1;
     }
+    
     iunlock(f->ip);
     return f->off;
   }
