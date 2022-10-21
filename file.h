@@ -42,3 +42,4 @@ extern struct devsw devsw[];
 // minor device numbers
 #define DEV_NULL 0
 #define DEV_ZERO 1
+#define DEV_MEM 2

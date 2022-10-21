@@ -14,16 +14,24 @@
 int
 drvmemread(struct inode *ip, char *dst, int n, uint off)
 {
-    if (ip->minor == DEV_NULL)
+    switch(ip->minor) 
+    {
+    case DEV_NULL:
         return 0;
 
-    if (ip->minor == DEV_ZERO) 
-    {
+    case DEV_ZERO:
         memset(dst, 0, n);
+        return n;
+
+    case DEV_MEM:
+        if (off >= PHYSTOP || off + n > PHYSTOP)
+            return -1;
+            
+        memmove(dst, (char*)P2V(off), n);
         return n;
     }
 
-    return -1;
+    return -2;
 }
 
 int 
@@ -35,7 +43,6 @@ drvmemwrite(struct inode *ip, char *src, int n, uint off)
 void 
 drvmeminit(void) 
 {
-
     devsw[DEV].write = drvmemwrite;
     devsw[DEV].read = drvmemread;
 }
