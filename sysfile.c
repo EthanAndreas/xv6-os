@@ -446,7 +446,7 @@ sys_pipe(void)
 int 
 sys_lseek(void) 
 {
-  int fd, offset, whence;
+  int fd,offset, whence;
   struct file *f;
 
   if(argint(0, &fd) < 0 || argint(1, &offset) < 0 || argint(2, &whence) < 0)
@@ -455,5 +455,5 @@ sys_lseek(void)
   if ((f = myproc()->ofile[fd]) == 0)
     return -1;
 
-  return filelseek(f,offset,whence);
+  return filelseek(f,(uint)offset,whence);
 }
