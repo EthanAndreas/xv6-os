@@ -6,6 +6,7 @@
 #include "x86.h"
 #include "proc.h"
 #include "spinlock.h"
+#include "prio.h"
 
 struct {
   struct spinlock lock;
@@ -111,6 +112,9 @@ found:
   p->context = (struct context*)sp;
   memset(p->context, 0, sizeof *p->context);
   p->context->eip = (uint)forkret;
+
+  p->prio = PRIO_RR;
+  p->last = ticks;
 
   return p;
 }
@@ -332,6 +336,7 @@ scheduler(void)
 
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
+
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
       if(p->state != RUNNABLE)
         continue;
@@ -339,6 +344,7 @@ scheduler(void)
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
+
       c->proc = p;
       switchuvm(p);
       p->state = RUNNING;
@@ -531,4 +537,41 @@ procdump(void)
     }
     cprintf("\n");
   }
+}
+
+int
+setprio(int prio, int pid)
+{
+  struct proc *p;
+  int oldprio = -1;
+
+  acquire(&ptable.lock);
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+    // found the good process
+    if(p->pid == pid){
+      oldprio = p->prio;
+      p->prio = prio;
+      break;
+    }
+  }
+  release(&ptable.lock);
+  return oldprio;
+}
+
+struct proc *
+selproc (int prio)
+{
+  struct proc *p;
+  struct proc *sel = 0;
+
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+    if(p->state != RUNNABLE)
+      continue;
+    if(p->prio <= prio)
+      continue;
+    if(sel == 0 || p->prio < sel->prio || (p->prio == sel->prio && p->pid < sel->pid))
+      sel = p;
+  }
+
+  return sel;
 }
