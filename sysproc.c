@@ -6,6 +6,7 @@
 #include "memlayout.h"
 #include "mmu.h"
 #include "proc.h"
+#include "resource.h"
 
 int
 sys_fork(void)
@@ -30,7 +31,7 @@ sys_wait(void)
   int *status;
   if (argptr(0, (void*)&status, sizeof(*status)) < 0)
     return -1;
-    
+
   return wait(status);
 }
 
@@ -96,4 +97,13 @@ sys_uptime(void)
   xticks = ticks;
   release(&tickslock);
   return xticks;
+}
+
+int 
+sys_getrusage(void)
+{
+  struct rusage *r;
+  if (argptr(0, (void*)&r, sizeof(*r)) < 0)
+    return -1;
+  return getrusage(r);
 }

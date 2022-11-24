@@ -72,7 +72,7 @@ main(int argc, char *argv[])
 {
   int npages, nuser, nsys;
   int status;
-  // struct rusage u;
+  struct rusage u;
 
   if(argc != 4){
     printf(2, "usage: %s nuser nsys npages\n", argv[0]);
@@ -96,11 +96,11 @@ main(int argc, char *argv[])
         printf(2, "cannot wait\n");
         exit(1);
       }
-      // printf(1, "exit(%d)\n", status);
-      // if(getrusage(&u) == -1)
-      //   printf(2, "cannot rusage\n");
-      // printf(1, "user=%d, sys=%d, maxrss=%d\n",
-      //           u.ru_utime, u.ru_stime, u.ru_maxrss);
+      printf(1, "exit(%d)\n", status);
+      if(getrusage(&u) == -1)
+        printf(2, "cannot rusage\n");
+      printf(1, "user=%d, sys=%d, maxrss=%d\n",
+                u.ru_utime, u.ru_stime, u.ru_maxrss);
   }
   exit(0);
 }

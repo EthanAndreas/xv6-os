@@ -9,6 +9,7 @@ struct spinlock;
 struct sleeplock;
 struct stat;
 struct superblock;
+struct rusage;
 
 // bio.c
 void            binit(void);
@@ -120,6 +121,7 @@ void            userinit(void);
 int             wait(int *);
 void            wakeup(void*);
 void            yield(void);
+int            getrusage(struct rusage *);
 
 // swtch.S
 void            swtch(struct context**, struct context*);

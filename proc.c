@@ -6,6 +6,7 @@
 #include "x86.h"
 #include "proc.h"
 #include "spinlock.h"
+#include "resource.h"
 
 struct {
   struct spinlock lock;
@@ -535,4 +536,10 @@ procdump(void)
     }
     cprintf("\n");
   }
+}
+
+int 
+getrusage(struct rusage *r)
+{
+  return 0;
 }
